@@ -65,7 +65,7 @@ public class ParkingDataBaseIT {
 
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 		parkingService.processIncomingVehicle();
-		// TODO: check that a ticket is actualy saved in DB and Parking table is updated
+		// check that a ticket is actualy saved in DB and Parking table is updated
 		// with availability
 
 		con = dataBaseTestConfig.getConnection();
@@ -94,7 +94,7 @@ public class ParkingDataBaseIT {
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
 		parkingService.processExitingVehicle();
-		// TODO: check that the fare generated and out time are populated correctly in
+		// check that the fare generated and out time are populated correctly in
 		// the database
 
 		con = dataBaseTestConfig.getConnection();

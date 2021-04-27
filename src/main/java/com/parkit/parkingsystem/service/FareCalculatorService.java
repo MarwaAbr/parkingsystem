@@ -16,20 +16,23 @@ public class FareCalculatorService {
 		if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
 			throw new IllegalArgumentException("Out time provided is incorrect:" + ticket.getOutTime().toString());
 		}
-		// ParkingService parkingService = new ParkingService(null, null, null);
+
 		Date inHour = ticket.getInTime();
 		Date outHour = ticket.getOutTime();
 
-// TODO: Some tests are failing here. Need to check if this logic is correct
+		// calculate duration in ms
 		double duration = outHour.getTime() - inHour.getTime();
 		double hourNbr = duration / 3600000;
 
 		switch (ticket.getParkingSpot().getParkingType()) {
 		case CAR: {
-
+			// parking car Free With Less Than 30Min
 			if (hourNbr < 0.5) {
 				ticket.setPrice(0);
-			} else if (recurring >= 2) {
+
+			}
+			// 5% discount for recurring users, call "recurring" function
+			else if (recurring >= 2) {
 				ticket.setPrice((hourNbr * Fare.CAR_RATE_PER_HOUR) * 0.95);
 			}
 
@@ -40,10 +43,13 @@ public class FareCalculatorService {
 
 		}
 		case BIKE: {
-
+			// parking bike Free With Less Than 30Min
 			if (hourNbr < 0.5) {
 				ticket.setPrice(0);
-			} else if (recurring >= 2) {
+
+			}
+			// 5% discount for recurring users, call "recurring" function
+			else if (recurring >= 2) {
 				ticket.setPrice((hourNbr * Fare.BIKE_RATE_PER_HOUR) * 0.95);
 			} else {
 				ticket.setPrice(hourNbr * Fare.BIKE_RATE_PER_HOUR);
@@ -56,6 +62,7 @@ public class FareCalculatorService {
 
 	}
 
+	// function that checks the number of accesses to the park per user
 	public int recurring(Ticket ticket) throws ClassNotFoundException, SQLException {
 
 		Connection con = null;

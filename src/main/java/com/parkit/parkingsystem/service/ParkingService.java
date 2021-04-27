@@ -70,6 +70,7 @@ public class ParkingService {
 
 	}
 
+	// function that checks if it is a recurring user
 	int recurringUsers(String vehicleRegNumber) throws Exception {
 		Connection con = null;
 		DataBaseConfig dataBaseConfig = new DataBaseConfig();

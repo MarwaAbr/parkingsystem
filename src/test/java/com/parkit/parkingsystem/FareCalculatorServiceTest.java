@@ -161,7 +161,7 @@ public class FareCalculatorServiceTest {
 	public void discountForRecurringUsersCar() throws Exception {
 
 		Date inTime = new Date();
-		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));// 60 minutes for recurringUser
+		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));// 60 minutes parking time
 		Date outTime = new Date();
 		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
 		ticket.setVehicleRegNumber("ABC");
@@ -169,7 +169,7 @@ public class FareCalculatorServiceTest {
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
 
-		fareCalculatorService.calculateFare(ticket, 2);
+		fareCalculatorService.calculateFare(ticket, 2);// recurring=2, recurringUser must have 5% discount
 
 		assertEquals(0.95 * Fare.CAR_RATE_PER_HOUR, ticket.getPrice());
 
@@ -179,7 +179,7 @@ public class FareCalculatorServiceTest {
 	public void discountForRecurringUsersBike() throws Exception {
 
 		Date inTime = new Date();
-		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));// 60 minutes for recurringUser
+		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));// 60 minutes parking time
 		Date outTime = new Date();
 		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
 		ticket.setVehicleRegNumber("ABC");
@@ -187,7 +187,7 @@ public class FareCalculatorServiceTest {
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
 
-		fareCalculatorService.calculateFare(ticket, 2);
+		fareCalculatorService.calculateFare(ticket, 2);// recurring=2, recurringUser must have 5% discount
 
 		assertEquals(0.95 * Fare.BIKE_RATE_PER_HOUR, ticket.getPrice());
 
