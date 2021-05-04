@@ -1,12 +1,7 @@
 package com.parkit.parkingsystem.service;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Date;
 
-import com.parkit.parkingsystem.config.DataBaseConfig;
 import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.model.Ticket;
 
@@ -59,25 +54,6 @@ public class FareCalculatorService {
 		default:
 			throw new IllegalArgumentException("Unkown Parking Type");
 		}
-
-	}
-
-	// function that checks the number of accesses to the park per user
-	public int recurring(Ticket ticket) throws ClassNotFoundException, SQLException {
-
-		Connection con = null;
-		DataBaseConfig dataBaseConfig = new DataBaseConfig();
-
-		con = dataBaseConfig.getConnection();
-
-		String sql = "SELECT COUNT(*) AS total FROM ticket WHERE VEHICLE_REG_NUMBER=?";
-
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(1, ticket.getVehicleRegNumber());
-		ResultSet rs = statement.executeQuery();
-		rs.next();
-
-		return rs.getInt("total");
 
 	}
 

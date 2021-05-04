@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -61,38 +61,38 @@ public class ParkingDataBaseIT {
 	}
 
 	@Test
-	public void testParkingACar() throws ClassNotFoundException, SQLException {
+	public void testParkingACar() throws Exception {
 
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 		parkingService.processIncomingVehicle();
-		// check that a ticket is actualy saved in DB and Parking table is updated
+		// check that a ticket is actually saved in DB and Parking table is updated
 		// with availability
 
 		con = dataBaseTestConfig.getConnection();
 
 		String sql = "SELECT VEHICLE_REG_NUMBER FROM ticket WHERE ID=?";
-		String sql1 = "SELECT AVAILABLE FROM parking WHERE PARKING_NUMBER=?";
 		PreparedStatement statement = con.prepareStatement(sql);
 		statement.setInt(1, 1);
 		ResultSet rs = statement.executeQuery();
 		rs.next();
+
+		String sql1 = "SELECT AVAILABLE FROM parking WHERE PARKING_NUMBER=?";
 		PreparedStatement statement1 = con.prepareStatement(sql1);
 		statement1.setInt(1, 1);
 		ResultSet rs1 = statement1.executeQuery();
 		rs1.next();
 
 		assertThat(rs.getString(1)).isEqualTo("ABCDEF");
-		assertThat(rs1.getInt(1)).isEqualTo(0);
 
+		assertThat(rs1.getInt(1)).isEqualTo(0);
 	}
 
 	@Test
 	public void testParkingLotExit() throws Exception {
 
-		testParkingACar();
-
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-
+		parkingService.processIncomingVehicle();
+		TimeUnit.MILLISECONDS.sleep(500);
 		parkingService.processExitingVehicle();
 		// check that the fare generated and out time are populated correctly in
 		// the database
@@ -100,18 +100,20 @@ public class ParkingDataBaseIT {
 		con = dataBaseTestConfig.getConnection();
 
 		String sql2 = "SELECT PRICE FROM ticket WHERE ID=?";
-		String sql3 = "SELECT OUT_TIME FROM ticket WHERE ID=?";
 		PreparedStatement statement2 = con.prepareStatement(sql2);
 		statement2.setInt(1, 1);
 		ResultSet rs2 = statement2.executeQuery();
 		rs2.next();
+
+		String sql3 = "SELECT OUT_TIME FROM ticket WHERE ID=?";
 		PreparedStatement statement3 = con.prepareStatement(sql3);
 		statement3.setInt(1, 1);
 		ResultSet rs3 = statement3.executeQuery();
 		rs3.next();
-		assertThat(rs2.getDouble(1)).isEqualTo(ticketDAO.getTicket("ABCDEF").getPrice());
-		assertThat(rs3.getTimestamp(1)).isEqualTo(ticketDAO.getTicket("ABCDEF").getOutTime());
 
+		assertThat(rs2.getDouble(1)).isEqualTo(ticketDAO.getTicket("ABCDEF").getPrice());
+
+		assertThat(rs3.getTimestamp(1)).isEqualTo(ticketDAO.getTicket("ABCDEF").getOutTime());
 	}
 
 }

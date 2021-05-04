@@ -39,7 +39,11 @@ public class ParkingService {
 			ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
 			if (parkingSpot != null && parkingSpot.getId() > 0) {
 				String vehicleRegNumber = getVehichleRegNumber();
-				recurringUsers(vehicleRegNumber);
+				if (recurringUsers(vehicleRegNumber) >= 1) {
+					System.out.println(
+							"Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount");
+				}
+
 				parkingSpot.setAvailable(false);
 				parkingSpotDAO.updateParking(parkingSpot);// allot this parking space and mark it's availability as
 															// false
@@ -70,8 +74,9 @@ public class ParkingService {
 
 	}
 
-	// function that checks if it is a recurring user
+	// function that checks the number of accesses to the parking per user
 	int recurringUsers(String vehicleRegNumber) throws Exception {
+
 		Connection con = null;
 		DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
@@ -83,10 +88,7 @@ public class ParkingService {
 		statement.setString(1, vehicleRegNumber);
 		ResultSet rs = statement.executeQuery();
 		rs.next();
-		if (rs.getInt("total") >= 1) {
-			System.out
-					.println("Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount");
-		}
+
 		return rs.getInt("total");
 
 	}
@@ -135,8 +137,10 @@ public class ParkingService {
 			Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
 			Date outTime = new Date();
 			ticket.setOutTime(outTime);
-			int recurring = fareCalculatorService.recurring(ticket);
+
+			int recurring = recurringUsers(vehicleRegNumber);
 			fareCalculatorService.calculateFare(ticket, recurring);
+
 			if (ticketDAO.updateTicket(ticket)) {
 				ParkingSpot parkingSpot = ticket.getParkingSpot();
 				parkingSpot.setAvailable(true);
